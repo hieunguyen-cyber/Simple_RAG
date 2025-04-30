@@ -1,0 +1,8 @@
+streamlit
+pandas
+chromadb
+langchain_community
+langchain_core
+rank-bm25
+huggingface_hub
+FlagEmbedding
