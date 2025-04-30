@@ -11,7 +11,7 @@ class Embedder:
     def embed(self, texts: List[str]) -> np.ndarray:
         embeddings = self.model.encode(
             texts,
-            batch_size=12,
+            batch_size=4,
             max_length=8192
         )['dense_vecs']
         return np.array(embeddings)

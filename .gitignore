@@ -9,3 +9,4 @@
 *.out
 *.pyc
 *.sqlite3
+cache.pkl

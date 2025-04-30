@@ -18,7 +18,6 @@ class VectorStore:
             ids=ids,
             persist_directory="./chroma_db"
         )
-        self.collection.persist()
     
     def query(self, query_embedding: np.ndarray, top_k: int = 5) -> Dict[str, Any]:
         results = self.collection.similarity_search_by_vector(
