@@ -74,6 +74,7 @@ class LLM:
         """
         try:
             response = self.llm.invoke(prompt, max_tokens=max_length)
+            print("Response generated sucessfully!")
             return response.strip()
         except Exception as e:
             raise RuntimeError(f"Failed to generate response: {str(e)}")
