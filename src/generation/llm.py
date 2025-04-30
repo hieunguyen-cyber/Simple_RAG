@@ -2,7 +2,6 @@
 
 from langchain_community.llms import LlamaCpp
 from langchain_core.prompts import PromptTemplate
-from huggingface_hub import hf_hub_download
 import os
 import torch
 
@@ -22,23 +21,12 @@ class LLM:
         os.makedirs(local_path, exist_ok=True)
         model_path = os.path.join(local_path, model_file)
         
-        # Download model if not exists
+        # Check if model exists, otherwise raise error
         if not os.path.exists(model_path):
-            print(f"Model not found at {model_path}. Downloading {model_file} from {model_repo}...")
-            try:
-                model_path = hf_hub_download(
-                    repo_id=model_repo,
-                    filename=model_file,
-                    local_dir=local_path,
-                    local_dir_use_symlinks=False
-                )
-                print(f"Model downloaded and saved to {model_path}")
-            except Exception as e:
-                raise RuntimeError(
-                    f"Failed to download {model_file}. Please download manually from "
-                    f"https://huggingface.co/{model_repo}/tree/main and place {model_file} in {local_path}. "
-                    f"Error: {str(e)}"
-                )
+            raise FileNotFoundError(
+                f"Model file not found at {model_path}. Please download it manually from "
+                f"https://huggingface.co/{model_repo}/tree/main and place it in the '{local_path}' directory."
+            )
         
         # Initialize LlamaCpp model
         try:
