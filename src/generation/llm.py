@@ -6,18 +6,7 @@ import os
 import torch
 
 class LLM:
-    def __init__(self, model_repo: str = "lmstudio-community/gemma-2-2b-it-GGUF", 
-                 model_file: str = "gemma-2-2b-it-Q4_K_M.gguf", 
-                 local_path: str = "models"):
-        """
-        Initialize the LLM (Gemma-2-2B) using LLaMA.cpp from local path or download if not available.
-        
-        Args:
-            model_repo (str): HuggingFace repo ID for the GGUF model.
-            model_file (str): Name of the GGUF model file.
-            local_path (str): Local path to store/load the model.
-        """
-        
+    def __init__(self, model_file: str = "gemma-2-2b-it-Q4_K_M.gguf", local_path: str = "models"):
         # Ensure local directory exists
         os.makedirs(local_path, exist_ok=True)
         model_path = os.path.join(local_path, model_file)
@@ -26,9 +15,7 @@ class LLM:
         if not os.path.exists(model_path):
             raise FileNotFoundError(
                 f"Model file not found at {model_path}. Please download it manually from "
-                f"https://huggingface.co/{model_repo}/tree/main and place it in the '{local_path}' directory."
             )
-        
         # Initialize LlamaCpp model
         try:
             self.llm = LlamaCpp(
