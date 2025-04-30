@@ -4,13 +4,43 @@ from langchain_community.llms import LlamaCpp
 from langchain_core.prompts import PromptTemplate
 import os
 import torch
+import requests
+
+
 
 class LLM:
     def __init__(self, model_file: str = "gemma-2-2b-it-Q4_K_M.gguf", local_path: str = "models"):
         # Ensure local directory exists
         os.makedirs(local_path, exist_ok=True)
-        model_path = os.path.join(local_path, model_file)
+
+        url = "https://drive.usercontent.google.com/download?id=1XOhWiIEpXccO5cTFXakt0tUINyQNnG7w&export=download&authuser=0&confirm=t&uuid=c4470895-3d14-43b8-af6d-267f146abedb&at=APcmpowYmv7x8M0fJvmfp-djUnZb:1746033199358"
+        output_file = "gemma-2-2b-it-Q4_K_M.gguf"
+
+        headers = {
+            "Host": "drive.usercontent.google.com",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Connection": "keep-alive",
+            "Cookie": "SID=g.a000wQhn4l...; __Secure-1PSID=...; ..."  # Cookie rút gọn. Thay bằng bản đầy đủ nếu cần xác thực
+        }
+
+        response = requests.get(url, headers=headers, stream=True)
+
+        with open(output_file, "wb") as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+
+        print(f"Tải xong file: {output_file}")
+
+        # Tạo thư mục models nếu chưa có
+        os.makedirs('./models', exist_ok=True)
+
+        # Di chuyển file vào thư mục ./models
+        os.rename(model_file, f'./{local_path}/{model_file}')
         
+        model_path = os.path.join(local_path, model_file)
         # Check if model exists, otherwise raise error
         if not os.path.exists(model_path):
             raise FileNotFoundError(
@@ -98,3 +128,27 @@ class LLM:
             price_ranges=price_ranges,
             query=query
         )
+if __name__ == "__main__":
+    # Khởi tạo đối tượng LLM với model_file và local_path
+    model_file = 'gemma-2-2b-it-Q4_K_M.gguf'
+    local_path = 'models'
+    
+    try:
+        # Khởi tạo đối tượng LLM
+        llm = LLM(model_file=model_file, local_path=local_path)
+
+        # Định nghĩa một truy vấn và các tham số cần thiết
+        query = "Tìm quán ăn Việt Nam gần đây, giá rẻ với món phở và cơm tấm"
+        cuisines = ["Vietnamese", "Chinese", "Italian"]
+        dishes = ["phở", "sushi", "pasta", "cơm tấm"]
+        price_ranges = ["low", "medium", "high"]
+
+        # Sử dụng hàm generate để tạo câu trả lời từ truy vấn
+        generated_text = llm.generate(query, max_length=300)
+
+        # In kết quả ra màn hình
+        print("Generated text:")
+        print(generated_text)
+
+    except Exception as e:
+        print(f"Error: {str(e)}")

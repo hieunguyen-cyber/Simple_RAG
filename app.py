@@ -1,21 +1,5 @@
 import streamlit as st
 from src.chatbot import RestaurantChatbot
-import wget
-import os
-
-# ID của file từ Google Drive và tên file cần tải
-file_id = '1XOhWiIEpXccO5cTFXakt0tUINyQNnG7w'  # Lấy ID từ link của bạn
-file_name = 'output.zip'   # Tên file cần tải về
-
-# Tải file từ Google Drive bằng wget
-url = f'https://docs.google.com/uc?export=download&id={file_id}'
-wget.download(url, file_name)
-
-# Tạo thư mục models nếu chưa có
-os.makedirs('./models', exist_ok=True)
-
-# Di chuyển file vào thư mục ./models
-os.rename(file_name, f'./models/{file_name}')
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
