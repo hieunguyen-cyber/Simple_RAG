@@ -6,3 +6,5 @@ langchain_core
 rank-bm25
 huggingface_hub
 FlagEmbedding
+fastapi
+uvicorn 

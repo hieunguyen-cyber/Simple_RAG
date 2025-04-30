@@ -1,10 +1,3 @@
-import subprocess
-import os
-
-# Tải mô hình nếu chưa có (gọi shell script)
-if not os.path.exists("models/gemma-2-2b-it-Q4_K_M.gguf"):
-    subprocess.run(["bash", "setup.sh"], check=True)
-
 import streamlit as st
 from src.chatbot import RestaurantChatbot
 
