@@ -4,7 +4,7 @@ from langchain_community.llms import LlamaCpp
 from langchain_core.prompts import PromptTemplate
 import os
 import torch
-from huggingface_hub import hf_hub_download
+
 class LLM:
     def __init__(self, model_repo: str = "lmstudio-community/gemma-2-2b-it-GGUF", 
                  model_file: str = "gemma-2-2b-it-Q4_K_M.gguf", 
@@ -17,12 +17,7 @@ class LLM:
             model_file (str): Name of the GGUF model file.
             local_path (str): Local path to store/load the model.
         """
-        hf_hub_download(
-            repo_id='$MODEL_REPO',
-            filename='$MODEL_FILE',
-            local_dir='$MODEL_DIR',
-            local_dir_use_symlinks=False
-        )
+        
         # Ensure local directory exists
         os.makedirs(local_path, exist_ok=True)
         model_path = os.path.join(local_path, model_file)
