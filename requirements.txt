@@ -9,3 +9,4 @@ FlagEmbedding
 fastapi
 uvicorn 
 wget
+llama-cpp-python
