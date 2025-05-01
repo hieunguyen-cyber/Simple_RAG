@@ -1,5 +1,3 @@
-# src/embeddings/embedder.py
-
 from FlagEmbedding import BGEM3FlagModel
 import numpy as np
 from typing import List
