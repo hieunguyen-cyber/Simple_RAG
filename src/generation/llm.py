@@ -59,33 +59,33 @@ class LLM:
         self.prompt_template = PromptTemplate(
             template="""Bạn là một trợ lý phân tích truy vấn nhà hàng. Phân tích truy vấn sau và trích xuất các đặc trưng: cuisine, menu, price_range, distance, rating, và description. Chỉ trích xuất các giá trị khớp chính xác với danh sách giá trị hợp lệ. Nếu không tìm thấy giá trị khớp, trả về null (hoặc [] cho menu). Loại bỏ các từ khóa đã trích xuất khỏi description. Trả về kết quả dưới dạng JSON.
 
-**Danh sách giá trị hợp lệ**:
-- cuisine: {cuisines}
-- menu: {dishes}
-- price_range: {price_ranges}
+                    **Danh sách giá trị hợp lệ**:
+                    - cuisine: {cuisines}
+                    - menu: {dishes}
+                    - price_range: {price_ranges}
 
-**Hướng dẫn**:
-- cuisine: Chỉ chọn giá trị từ danh sách cuisine. Ví dụ, "Viet" → "Vietnamese".
-- menu: Chỉ chọn các món khớp chính xác với danh sách menu. Ví dụ, "phở bò" → "phở", "sushi" → [].
-- price_range: Chỉ chọn {price_ranges}. Ví dụ, "cheap" → "low".
-- distance: Trích xuất số km (e.g., "2 km" → 2.0) hoặc từ khóa ["nearby", "close" → 2.0, "far" → 10.0]. Nếu không rõ, trả về null.
-- rating: Trích xuất số (e.g., "4 stars" → 4.0). Nếu không rõ, trả về null.
-- description: Phần còn lại sau khi loại bỏ các từ khóa đã trích xuất. Nếu rỗng, trả về truy vấn gốc.
+                    **Hướng dẫn**:
+                    - cuisine: Chỉ chọn giá trị từ danh sách cuisine. Ví dụ, "Viet" → "Vietnamese".
+                    - menu: Chỉ chọn các món khớp chính xác với danh sách menu. Ví dụ, "phở bò" → "phở", "sushi" → [].
+                    - price_range: Chỉ chọn {price_ranges}. Ví dụ, "cheap" → "low".
+                    - distance: Trích xuất số km (e.g., "2 km" → 2.0) hoặc từ khóa ["nearby", "close" → 2.0, "far" → 10.0]. Nếu không rõ, trả về null.
+                    - rating: Trích xuất số (e.g., "4 stars" → 4.0). Nếu không rõ, trả về null.
+                    - description: Phần còn lại sau khi loại bỏ các từ khóa đã trích xuất. Nếu rỗng, trả về truy vấn gốc.
 
-**Truy vấn**: {query}
+                    **Truy vấn**: {query}
 
-**Định dạng đầu ra**:
-{{
-  "cuisine": null | "tên loại ẩm thực",
-  "menu": [],
-  "price_range": null | "low" | "medium" | "high",
-  "distance": null | số km | "nearby" | "close" | "far",
-  "rating": null | số,
-  "description": "phần mô tả còn lại"
-}}
-""",
-            input_variables=["cuisines", "dishes", "price_ranges", "query"]
-        )
+                    **Định dạng đầu ra**:
+                    {{
+                    "cuisine": null | "tên loại ẩm thực",
+                    "menu": [],
+                    "price_range": null | "low" | "medium" | "high",
+                    "distance": null | số km | "nearby" | "close" | "far",
+                    "rating": null | số,
+                    "description": "phần mô tả còn lại"
+                    }}
+                    """,
+                                input_variables=["cuisines", "dishes", "price_ranges", "query"]
+                            )
     
     def generate(self, prompt: str, max_length: int = 300) -> str:
         """
