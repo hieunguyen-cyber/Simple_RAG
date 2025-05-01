@@ -1,3 +1,21 @@
+# Python-specific
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+*.egg-info/
+pip-wheel-metadata/
+build/
+dist/
+
+# Streamlit-specific
+.streamlit/
+*.sqlite3
+
+# Compiled and binary files
 *.gguf
 *.bin
 *.exe
@@ -7,5 +25,27 @@
 *.o
 *.a
 *.out
-*.pyc
-*.sqlite3
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Conda-specific
+.conda/
+
+# Chroma DB (optional: remove if you want to commit this)
+chroma_db/
+
+# Docker-specific
+Dockerfile
+.dockerignore
+
+# Git-specific
+.git/
+.gitignore
