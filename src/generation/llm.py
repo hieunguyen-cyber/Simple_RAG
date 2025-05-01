@@ -28,7 +28,7 @@ class LLM:
         try:
             self.llm = LlamaCpp(
                 model_path=model_path,
-                n_ctx=512,  # Short context for low RAM
+                n_ctx=1024,  # Short context for low RAM
                 max_tokens=200,  # Limit output length
                 temperature=0.7,
                 n_gpu_layers=0,  # No GPU on Vercel
@@ -70,7 +70,7 @@ class LLM:
                                 input_variables=["cuisines", "dishes", "price_ranges", "query"]
                             )
     
-    def generate(self, prompt: str, max_length: int = 300) -> str:
+    def generate(self, prompt: str, max_length: int = 1000) -> str:
         """
         Generate text using the LLM.
         

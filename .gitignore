@@ -10,6 +10,8 @@ venv/
 pip-wheel-metadata/
 build/
 dist/
+models
+.devcontainer
 
 # Streamlit-specific
 .streamlit/
