@@ -1,6 +1,7 @@
 streamlit
 pandas
 wget
+torch
 transformers
 chromadb
 langchain-community
