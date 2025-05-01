@@ -1,56 +1,39 @@
 from langchain_community.llms import LlamaCpp
 from langchain_core.prompts import PromptTemplate
 import os
-import torch
-import requests
-
-
+from huggingface_hub import hf_hub_download
 
 class LLM:
-    def __init__(self, model_file: str = "gemma-2-2b-it-Q4_K_M.gguf", local_path: str = "models"):
+    def __init__(self, model_repo: str = "lmstudio-community/gemma-2-2b-it-GGUF", 
+                 model_file: str = "gemma-2-2b-it-Q4_K_M.gguf", 
+                 local_path: str = "models"):
+        os.makedirs(local_path, exist_ok=True)
         model_path = os.path.join(local_path, model_file)
         if not os.path.exists(model_path):
-            url = "https://drive.usercontent.google.com/download?id=1XOhWiIEpXccO5cTFXakt0tUINyQNnG7w&export=download&authuser=0&confirm=t&uuid=c4470895-3d14-43b8-af6d-267f146abedb&at=APcmpowYmv7x8M0fJvmfp-djUnZb:1746033199358"
-            output_file = "gemma-2-2b-it-Q4_K_M.gguf"
-
-            headers = {
-                "Host": "drive.usercontent.google.com",
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-                "Accept-Language": "en-US,en;q=0.9",
-                "Connection": "keep-alive",
-                "Cookie": "SID=g.a000wQhn4l...; __Secure-1PSID=...; ..."  # Cookie rút gọn. Thay bằng bản đầy đủ nếu cần xác thực
-            }
-
-            response = requests.get(url, headers=headers, stream=True)
-
-            with open(output_file, "wb") as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    if chunk:
-                        f.write(chunk)
-
-            print(f"Tải xong file: {output_file}")
-            # Tạo thư mục models nếu chưa có
-            os.makedirs('./models', exist_ok=True)
-
-            # Di chuyển file vào thư mục ./models
-            os.rename(model_file, f'./{local_path}/{model_file}')
-            
-        # Check if model exists, otherwise raise error
-        if not os.path.exists(model_path):
-            raise FileNotFoundError(
-                f"Model file not found at {model_path}. Please download it manually."
-            )
-        # Initialize LlamaCpp model
+            print(f"Model not found at {model_path}. Downloading {model_file} from {model_repo}...")
+            try:
+                model_path = hf_hub_download(
+                    repo_id=model_repo,
+                    filename=model_file,
+                    local_dir=local_path,
+                    local_dir_use_symlinks=False
+                )
+                print(f"Model downloaded and saved to {model_path}")
+            except Exception as e:
+                raise RuntimeError(
+                    f"Failed to download {model_file}. Please download manually from "
+                    f"https://huggingface.co/{model_repo}/tree/main and place {model_file} in {local_path}. "
+                    f"Error: {str(e)}"
+                )
         try:
             self.llm = LlamaCpp(
                 model_path=model_path,
-                n_ctx=2048,
-                max_tokens=300,
+                n_ctx=512,  # Short context for low RAM
+                max_tokens=200,  # Limit output length
                 temperature=0.7,
-                n_gpu_layers=-1 if torch.cuda.is_available() or torch.backends.mps.is_available() else 0,
-                n_threads=8,
-                verbose=True
+                n_gpu_layers=0,  # No GPU on Vercel
+                n_threads=2,  # Optimize for serverless
+                verbose=False  # Reduce logging
             )
         except Exception as e:
             raise RuntimeError(f"Failed to initialize LlamaCpp with model {model_path}: {str(e)}")
@@ -126,12 +109,11 @@ class LLM:
         )
 if __name__ == "__main__":
     # Khởi tạo đối tượng LLM với model_file và local_path
-    model_file = 'gemma-2-2b-it-Q4_K_M.gguf'
     local_path = 'models'
     
     try:
         # Khởi tạo đối tượng LLM
-        llm = LLM(model_file=model_file, local_path=local_path)
+        llm = LLM(local_path=local_path)
 
         # Định nghĩa một truy vấn và các tham số cần thiết
         query = "Tìm quán ăn Việt Nam gần đây, giá rẻ với món phở và cơm tấm"
