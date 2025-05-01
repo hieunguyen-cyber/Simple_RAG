@@ -3,10 +3,10 @@ pandas
 chromadb
 langchain_community
 langchain_core
+llama-cpp-python
 rank-bm25
 huggingface_hub
 FlagEmbedding
 fastapi
 uvicorn 
 wget
-llama-cpp-python
