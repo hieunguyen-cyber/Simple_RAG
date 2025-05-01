@@ -44,10 +44,6 @@ Thumbs.db
 # Chroma DB (optional: remove if you want to commit this)
 chroma_db/
 
-# Docker-specific
-Dockerfile
-.dockerignore
-
 # Git-specific
 .git/
 .gitignore
