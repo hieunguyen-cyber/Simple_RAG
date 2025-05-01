@@ -1,0 +1,45 @@
+# Python bytecode files
+__pycache__
+*.pyc
+*.pyo
+.conda
+chromadb
+models
+# Virtual environment
+venv/
+env/
+ENV/
+*.egg-info/
+
+# IDE config files
+.vscode/
+.idea/
+
+# Log files
+*.log
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# System files
+.DS_Store
+Thumbs.db
+.devcontainer
+
+# Dockerfile and other Docker related files (optional)
+Dockerfile*
+docker-compose.yml
+
+# Node.js dependencies (if applicable)
+node_modules/
+
+# Test and coverage directories
+.coverage
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Miscellaneous
+*.bak
+*.swp
