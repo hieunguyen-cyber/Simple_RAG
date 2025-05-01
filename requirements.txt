@@ -5,7 +5,6 @@ torch
 transformers
 chromadb
 llama-cpp-python
-langchain-community
 langchain-core
 rank-bm25
 huggingface_hub

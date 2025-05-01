@@ -1,4 +1,4 @@
-from langchain_community.llms import LlamaCpp
+from llama_cpp import Llama
 from langchain_core.prompts import PromptTemplate
 import os
 from huggingface_hub import hf_hub_download
@@ -26,7 +26,7 @@ class LLM:
                     f"Error: {str(e)}"
                 )
         try:
-            self.llm = LlamaCpp(
+            self.llm = Llama(
                 model_path=model_path,
                 n_ctx=1024,  # Short context for low RAM
                 max_tokens=200,  # Limit output length
@@ -82,9 +82,9 @@ class LLM:
             str: Generated text.
         """
         try:
-            response = self.llm.invoke(prompt, max_tokens=max_length)
+            response = self.llm(prompt, max_tokens=None)
             print("Response generated sucessfully!")
-            return response.strip()
+            return response["choices"][0]["text"]
         except Exception as e:
             raise RuntimeError(f"Failed to generate response: {str(e)}")
     
