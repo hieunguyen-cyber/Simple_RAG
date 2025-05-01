@@ -4,6 +4,7 @@ wget
 torch
 transformers
 chromadb
+llama-cpp-python
 langchain-community
 langchain-core
 rank-bm25
