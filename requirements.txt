@@ -1,6 +1,7 @@
 streamlit==1.32.2
 pandas==2.2.2
-chromadb==0.4.24
+chromadb==0.4.22
+tokenizers==0.13.2
 langchain-community==0.0.30
 langchain-core==0.1.50
 llama-cpp-python==0.1.83
