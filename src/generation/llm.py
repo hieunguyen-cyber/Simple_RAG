@@ -1,42 +1,42 @@
-from llama_cpp import Llama
+from transformers import AutoModelForCausalLM, AutoTokenizer
 from langchain_core.prompts import PromptTemplate
 import os
-from huggingface_hub import hf_hub_download
+from typing import List
 
 class LLM:
-    def __init__(self, model_repo: str = "lmstudio-community/gemma-2-2b-it-GGUF", 
-                 model_file: str = "gemma-2-2b-it-Q4_K_M.gguf", 
+    def __init__(self, model_repo: str = "Qwen/Qwen2-1.5B-Instruct", 
                  local_path: str = "models"):
+        """
+        Initialize the LLM with Qwen2-1.5B-Instruct using Hugging Face Transformers.
+
+        Args:
+            model_repo (str): Hugging Face repository ID for the model.
+            local_path (str): Local directory to store the model.
+        """
         os.makedirs(local_path, exist_ok=True)
-        model_path = os.path.join(local_path, model_file)
-        if not os.path.exists(model_path):
-            print(f"Model not found at {model_path}. Downloading {model_file} from {model_repo}...")
-            try:
-                model_path = hf_hub_download(
-                    repo_id=model_repo,
-                    filename=model_file,
-                    local_dir=local_path,
-                    local_dir_use_symlinks=False
-                )
-                print(f"Model downloaded and saved to {model_path}")
-            except Exception as e:
-                raise RuntimeError(
-                    f"Failed to download {model_file}. Please download manually from "
-                    f"https://huggingface.co/{model_repo}/tree/main and place {model_file} in {local_path}. "
-                    f"Error: {str(e)}"
-                )
+        
         try:
-            self.llm = Llama(
-                model_path=model_path,
-                n_ctx=1024,  # Short context for low RAM
-                max_tokens=200,  # Limit output length
-                temperature=0.7,
-                n_gpu_layers=0,  # No GPU on Vercel
-                n_threads=2,  # Optimize for serverless
-                verbose=False  # Reduce logging
+            # Load the model
+            self.llm = AutoModelForCausalLM.from_pretrained(
+                model_repo,
+                device_map="auto",  # Automatically map to CPU
+                cache_dir=local_path,
+                trust_remote_code=True
             )
+            
+            # Load the tokenizer
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                model_repo,
+                cache_dir=local_path,
+                trust_remote_code=True
+            )
+            print(f"Model successfully loaded from {model_repo}")
         except Exception as e:
-            raise RuntimeError(f"Failed to initialize LlamaCpp with model {model_path}: {str(e)}")
+            raise RuntimeError(
+                f"Failed to initialize model from {model_repo}. "
+                f"Please ensure the model is available at https://huggingface.co/{model_repo}. "
+                f"Error: {str(e)}"
+            )
         
         # Define prompt template for query parsing (used in query_parser.py)
         self.prompt_template = PromptTemplate(
@@ -67,8 +67,8 @@ class LLM:
                     "description": "phần mô tả còn lại"
                     }}
                     """,
-                                input_variables=["cuisines", "dishes", "price_ranges", "query"]
-                            )
+            input_variables=["cuisines", "dishes", "price_ranges", "query"]
+        )
     
     def generate(self, prompt: str, max_length: int = 1000) -> str:
         """
@@ -76,19 +76,35 @@ class LLM:
         
         Args:
             prompt (str): Input prompt.
-            max_length (int): Maximum length of the generated text (overridden by max_tokens).
+            max_length (int): Maximum length of the generated text.
         
         Returns:
             str: Generated text.
         """
         try:
-            response = self.llm(prompt, max_tokens=None)
-            print("Response generated sucessfully!")
-            return response["choices"][0]["text"]
+            # Apply chat template for instruction-tuned Qwen model
+            messages = [{"role": "user", "content": prompt}]
+            prompt_with_template = self.tokenizer.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True
+            )
+            # Tokenize input prompt
+            inputs = self.tokenizer(prompt_with_template, return_tensors="pt").to(self.llm.device)
+            # Generate text
+            outputs = self.llm.generate(
+                **inputs,
+                max_new_tokens=max_length,
+                temperature=0.7,
+                do_sample=True,
+                pad_token_id=self.tokenizer.eos_token_id
+            )
+            # Decode the generated tokens
+            response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+            print("Response generated successfully!")
+            return response.strip()
         except Exception as e:
             raise RuntimeError(f"Failed to generate response: {str(e)}")
     
-    def format_query_prompt(self, query: str, cuisines: list, dishes: list, price_ranges: list) -> str:
+    def format_query_prompt(self, query: str, cuisines: List[str], dishes: List[str], price_ranges: List[str]) -> str:
         """
         Format the prompt for query parsing using the prompt template.
         
@@ -107,8 +123,9 @@ class LLM:
             price_ranges=price_ranges,
             query=query
         )
+
 if __name__ == "__main__":
-    # Khởi tạo đối tượng LLM với model_file và local_path
+    # Khởi tạo đối tượng LLM với model_repo và local_path
     local_path = 'models'
     
     try:
