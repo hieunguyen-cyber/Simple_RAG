@@ -7,3 +7,4 @@ langchain-core
 rank-bm25
 huggingface_hub
 langchain-community
+accelerate

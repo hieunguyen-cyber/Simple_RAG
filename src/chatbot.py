@@ -58,9 +58,9 @@ class RestaurantChatbot:
         description = parsed_query["description"] if parsed_query["description"] else query
         
         if filtered_df.empty:
-            retrieved_docs = self.retriever.retrieve(description, self.df, top_k=3)
+            retrieved_docs = self.retriever.retrieve(description, self.df, top_k=1)
         else:
-            retrieved_docs = self.retriever.retrieve(description, filtered_df, top_k=3)
+            retrieved_docs = self.retriever.retrieve(description, filtered_df, top_k=1)
         
         if not retrieved_docs:
             return "Mình không tìm được nhà hàng nào phù hợp. Bạn thử đổi tiêu chí xem, như mở rộng khoảng cách hoặc loại món ăn nhé!", []

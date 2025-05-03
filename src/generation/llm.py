@@ -70,7 +70,7 @@ class LLM:
             input_variables=["cuisines", "dishes", "price_ranges", "query"]
         )
     
-    def generate(self, prompt: str, max_length: int = 1000) -> str:
+    def generate(self, prompt: str, max_length: int = 100) -> str:
         """
         Generate text using the LLM.
         
@@ -91,16 +91,16 @@ class LLM:
             inputs = self.tokenizer(prompt_with_template, return_tensors="pt").to(self.llm.device)
             # Generate text
             outputs = self.llm.generate(
-                **inputs,
-                max_new_tokens=max_length,
-                temperature=0.7,
-                do_sample=True,
-                pad_token_id=self.tokenizer.eos_token_id
-            )
+                        **inputs,
+                        max_new_tokens=max_length,
+                        temperature=0.7,
+                        do_sample=True,
+                        pad_token_id=self.tokenizer.eos_token_id,
+                    )
             # Decode the generated tokens
             response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
             print("Response generated successfully!")
-            return response.strip()
+            return response.split('assistant')[2]
         except Exception as e:
             raise RuntimeError(f"Failed to generate response: {str(e)}")
     

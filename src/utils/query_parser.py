@@ -37,7 +37,7 @@ class QueryParser:
         )
         
         # Generate response
-        response = self.llm.generate(prompt)
+        response = self.llm.generate(prompt, max_length = 1024)
         
         # Parse JSON response
         try:
